@@ -196,7 +196,7 @@ Start:
 	.rept 2
 	ldx #$0000	;tile 0 ( )
 	stx $2118
-	ldx $0002	;tile 2 (|)
+	ldx #$0002	;tile 2 (|)
 	stx $2118
 	.endr
 	;------
