@@ -4,6 +4,7 @@
 .org 0
 .section "Tiledata"
 .include "tiles.inc"
+.ends
 
 VBlank:
 	RTI
@@ -61,5 +62,3 @@ Start:
 	  ldx #$0000
 	  stx $2118
 	   
-	
-.ends
