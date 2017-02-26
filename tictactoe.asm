@@ -41,21 +41,21 @@ VBlank:
 	sta $0201	;store it
 	cmp $0200	;compare it with the previous
 	bne +		;if not equal, go forward to next plus sign
-+	rti		;if equal, return (return from interrupt)
+	rti		;if equal, return (return from interrupt)
 
-	sta $0200	;store
++	sta $0200	;store
 	and #%00010000	;get the start button
 			;this will be the delete key
 	beq +		; if it's 0, we don't have to delete
--	ldx #$0000
-	stz $0000,x	;delete addresses $0000 to $0008
+	ldx #$0000
+-	stz $0000,x	;delete addresses $0000 to $0008
 	inx
 	cpx #$09
 	bne -
 	stz $0100	;delete the scroll
-+	stz $0101	;and data
+	stz $0101	;and data
 
-	lda $0201	;get back the temp value
++	lda $0201	;get back the temp value
 	and #%11000000	;getting specifically B AND Y
 	beq +		;if empty, skip this
 	;	B or Y is pressed.
@@ -81,9 +81,9 @@ VBlank:
 	tax		;Transfer A -> X
 	lda #$08
 	sta $0000,x	; put $08 to the good address
-++	jmp +
+	jmp +
 
-	cmp #%01000000	;now check for Y
+++	cmp #%01000000	;now check for Y
 	bne +		;if not pressed, jump forward
 			;technically should not happen
 	
@@ -97,10 +97,10 @@ VBlank:
 	ldx #$0000
 	tax
 	lda #$0A
-+	sta $0000,x
+	sta $0000,x
 
 	;now for cursor movement
-	lda $0201	;get control input
++	lda $0201	;get control input
 	and #%00001111	;ONLY CHECKS FOR DPAD MOVEMENT
 	sta $0201	;store this in A
 	
@@ -109,33 +109,33 @@ VBlank:
 	lda $0101	;get scroll Y
 	cmp #$00	;if on the top,
 	beq +		;don't do anything
-+	dec $0101	;subtract 1 from Y
+	dec $0101	;subtract 1 from Y
 
-	lda $0201	;get control again
++	lda $0201	;get control again
 	cmp #%00000100	;down?
 	bne +		;if not, skip
 	lda $0101
 	cmp #$02	;if on the bottom,
 	beq +		;don't do anything
-+	inc $0101	; increase Y by 1
+	inc $0101	; increase Y by 1
 
-	lda $0201	;get control again
++	lda $0201	;get control again
 	cmp #%00000010	;left?
 	bne +
 	lda $0100
-	cmp #$00	;if on the left, don't do anything
+	cmp #$00
 	beq +
-+	dec $0100	;x-= 1
+	dec $0100
 
-	lda $0201
++	lda $0201
 	cmp #%00000001	;right?
 	bne +
 	lda $0100
-	cmp #$02	;if on the right, don't do anything
+	cmp #$02
 	beq +
-+	inc $0100	;add 1 to X
+	inc $0100
 
-	rti
++	rti
 
 ;---------------
 .ends
@@ -152,9 +152,9 @@ Start:
 	rep #%00010000	;16 bit xy
 	sep #%00100000	;8 bit ab
 
--	ldx #$0000	;take every byte from the palette, put in CGRAM
+	ldx #$0000	;take every byte from the palette, put in CGRAM
  
-	lda UntitledPalette.l, x
+-	lda UntitledPalette.l, x
 	sta $2122
 	inx
 	cpx #8
@@ -302,8 +302,8 @@ forever:
 	xba
 	sta $2110
 
--	ldx #$0000	;reset counter
-	rep #%00100000	;16 bit A
+	ldx #$0000	;reset counter
+-	rep #%00100000	;16 bit A
 	lda #$0000	;empty it
 	sep #%00100000	;8 bit A
 	lda VRAMtable.l, x	;long-indexed address
