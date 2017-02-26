@@ -33,7 +33,110 @@ sep #%00100000
 .section "VBlank"
 ;---------------
 VBlank:
-	RTI
+	lda $4212	;get joypad status
+	and #%00000001	;if joypad is not ready
+	bne VBlank	;wait
+	lda $4219	;read joypad (low byte ((only polling B,Y,
+			;SELECT, START, Up,Dn,L,R)))
+	sta $0201	;store it
+	cmp $0200	;compare it with the previous
+	bne +		;if not equal, go forward to next plus sign
+	rti		;if equal, return (return from interrupt)
+
++	sta $0200	;store
+	and #%00010000	;get the start button
+			;this will be the delete key
+	beq +		; if it's 0, we don't have to delete
+	ldx #$0000
+-	stz $0000,x	;delete addresses $0000 to $0008
+	inx
+	cpx #$09
+	bne -
+	stz $0100	;delete the scroll
+	stz $0101	;and data
+
++	lda $0201	;get back the temp value
+	and #%11000000	;getting specifically B AND Y
+	beq +		;if empty, skip this
+	;	B or Y is pressed.
+	;press B to place an O
+	;press Y to place an X
+	cmp #%11000000	;both are pressed?
+	beq +		;then don't do anything
+	cmp #%10000000	;Just B?
+	bne ++		;if no, try Y
+	;so B is pressed, write an O ($08)
+	;we have to tell the cursor position & calculate
+	;an address from that using this Formula:
+	;	Address = 3 * Y + X
+	lda $0101	;get Y
+	sta $0202	;put it to a temp value
+	clc		;clear carry
+	adc $0202	;Multiply By 3 Easiest Way Tutorial
+	adc $0202	; A*3 = A+A+A
+	adc $0100	;add X
+	;now A contains our Address
+
+	ldx #$0000
+	tax		;Transfer A -> X
+	lda #$08
+	sta $0000,x	; put $08 to the good address
+	jmp +
+
+++	cmp #%01000000	;now check for Y
+	bne +		;if not pressed, jump forward
+			;technically should not happen
+	
+	;so Y is pressed, write an X ($0A)
+	lda $0101	;get Y
+	sta $0202	;put it to a temp value
+	clc
+	adc $0202
+	adc $0202
+	adc $0100
+	ldx #$0000
+	tax
+	lda #$0A
+	sta $0000,x
+
+	;now for cursor movement
++	lda $0201	;get control input
+	and #%00001111	;ONLY CHECKS FOR DPAD MOVEMENT
+	sta $0201	;store this in A
+	
+	cmp #%00001000	;up?
+	bne +		;if not, skip
+	lda $0101	;get scroll Y
+	cmp #$00	;if on the top,
+	beq +		;don't do anything
+	dec $0101	;subtract 1 from Y
+
++	lda $0201	;get control again
+	cmp #%00000100	;down?
+	bne +		;if not, skip
+	lda $0101
+	cmp #$02	;if on the bottom,
+	beq +		;don't do anything
+	inc $0101	; increase Y by 1
+
++	lda $0201	;get control again
+	cmp #%00000010	;left?
+	bne +
+	lda $0100
+	cmp #$00	;if on the left, don't do anything
+	beq +
+	dec $0100	;x-= 1
+
++	lda $0201
+	cmp #%00000001	;right?
+	bne +
+	lda $0100
+	cmp #$02	;if on the right, don't do anything
+	beq +
+	inc $0100	;add 1 to X
+
++	rti
+
 ;---------------
 .ends
 
@@ -199,7 +302,24 @@ forever:
 	xba
 	sta $2110
 
-	;
+	ldx #$0000	;reset counter
+-	rep #%00100000	;16 bit A
+	lda #$0000	;empty it
+	sep #%00100000	;8 bit A
+	lda VRAMtable.l, x	;long-indexed address
+	rep #%00100000
+	clc
+	adc #$4000	;add $4000 to the value & carry bit on
+	sta $2116	;write to VRAM from here
+	lda #$0000	;reset A while it's still 16 bit
+	sep #%00100000
+	lda $0000,x	;get the corresponding tile from RAM
+	;VRAM data write mode is still %10000000
+	sta $2118
+	stz $2119
+	inx
+	cpx #9		;finished?
+	bne -		;if not, go back!
 
 	jmp forever
 ;--------------------
