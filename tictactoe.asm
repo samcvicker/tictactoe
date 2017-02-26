@@ -61,4 +61,29 @@ Start:
 	  .endr
 	  ldx #$0000
 	  stx $2118
-	   
+	  ;first line done, add BGs?
+	  .rept 27
+	    stx $2118	; X = O
+	  .endr
+	
+	  ;beginning of 2nd line
+	  ;-+-+-
+	  .rept 2
+	    ldx #$0004	; tile 4 (-)
+	    stx $2118
+	    ldx #$0006	; tile 6 (+)
+	    stx $2118
+	  .endr
+	  ldx #$0004	; tile 4 (-)
+	  stx $2118
+	  ldx #$0000
+	  .rept 27
+	    stx $2118
+	  .endr
+	.endr
+	.rept 2
+	  ldx #$0000	; tile 0 ( )
+	  stx $2118
+	  ldx #$0002	; tile 2 (|)
+	  stx $2118
+	.endr
