@@ -1,6 +1,5 @@
 .include "Header.inc"
-;.include "Snes_Init.asm"
-.include "InitSNES.asm"
+.include "Snes_Init.asm"
 
 .bank 0 slot 0
 .org 0
@@ -17,8 +16,8 @@ VBlank:
 .section "Main"
 ;---------------
 Start:
-	;Snes_Init
-	InitSNES
+	Snes_Init
+	
 	;--LOADING THE PALETTE	
 	rep #%00010000	;16 bit xy
 	sep #%00100000	;8 bit ab
@@ -46,7 +45,7 @@ Start:
 	sty $4305
 	lda #%00000001
 	sta $4300
-	lda #$18		;$211[89]: VRAM data write (???)
+	lda #$18		;$211[89]: VRAM data write 
 	sta $4301		;set destination
 
 	ldy #$0000		;write to VRAM from $0000
@@ -63,6 +62,7 @@ Start:
 ;_____________________________________
 	.rept 2
 	;------
+	;X|X|X
 	.rept 2
 	ldx #$0000	;tile 0 ( )
 	stx $2118
@@ -134,7 +134,7 @@ Start:
 	sep #$20	;8bit a
 	sta $210E	;BG1 vert scroll
 	xba
-	sta $210
+	sta $210E
 
 	rep #$20	;16bit a
 	lda #$FFFF	;this is -1 for BG2
