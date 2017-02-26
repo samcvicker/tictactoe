@@ -1,6 +1,6 @@
 .include "Header.inc"
-.include "Snes_Init.asm"
-;.include "InitSNES.asm"
+;.include "Snes_Init.asm"
+.include "InitSNES.asm"
 
 .bank 0 slot 0
 .org 0
@@ -17,8 +17,8 @@ VBlank:
 .section "Main"
 ;---------------
 Start:
-	Snes_Init
-	
+	;Snes_Init
+	InitSNES
 	;--LOADING THE PALETTE	
 	rep #%00010000	;16 bit xy
 	sep #%00100000	;8 bit ab
