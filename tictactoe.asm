@@ -79,7 +79,7 @@ VBlank:
 
 	ldx #$0000
 	tax		;Transfer A -> X
-	lda $08
+	lda #$08
 	sta $0000,x	; put $08 to the good address
 	jmp +
 
@@ -96,7 +96,7 @@ VBlank:
 	adc $0100
 	ldx #$0000
 	tax
-	lda $0A
+	lda #$0A
 	sta $0000,x
 
 	;now for cursor movement
