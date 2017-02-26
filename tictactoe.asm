@@ -1,6 +1,33 @@
 .include "Header.inc"
 .include "Snes_Init.asm"
 
+;--------------
+.macro ConvertX
+;Data in: our coordinate in A
+;Data out: SNES scroll data in C (the 16 bit A)
+.rept 5
+asl a	;multiply A by 32
+.endr
+rep #%00100000	;16 bit A
+eor #$FFFF	;this will do A=1-A
+inc a		
+sep #%00100000	;8 bit A
+.endm
+;--------------
+
+;--------------
+.macro ConvertY
+;sama data in & out as b4
+.rept 5
+asl a
+.endr
+rep #%00100000
+eor #$FFFF
+sep #%00100000
+.endm
+;--------------
+
+
 .bank 0 slot 0
 .org 0
 .section "VBlank"
@@ -151,6 +178,29 @@ Start:
 
 forever:
 	wai
+	
+	rep #%00100000	;get 16 bit A
+	lda #$0000	;empty it
+	sep #%00100000	;get 8 bit A
+	lda $0100	;get our X coordinate
+	 ConvertX
+	sta $210F	;BG2 vertical scroll
+	xba
+	sta $210F	;write 16 bits
+	
+	;now repeat that, but change $0100 to $0101
+	;and also change $210F to $2110
+	rep #%00100000
+	lda #$0000
+	sep #%00100000
+	lda $0101	;get Y coordinate
+	 ConvertY
+	sta $2110	;BG2 vert scroll
+	xba
+	sta $2110
+
+	;
+
 	jmp forever
 ;--------------------
 .ends
@@ -160,3 +210,13 @@ forever:
 .section "Tiledata"
 .include "tiles.inc"
 .ends
+
+.bank 2 slot 0
+.org 0
+.section "Conversiontable"
+;-------------------------
+VRAMtable:
+	.db $00, $02, $04, $40, $42, $44, $80, $82, $84
+;-------------------------
+.ends
+
