@@ -1,17 +1,25 @@
 .include "Header.inc"
 .include "Snes_Init.asm"
-.bank 1 slot 0
-.org 0
-.section "Tiledata"
-.include "tiles.inc"
-.ends
+;.include "InitSNES.asm"
 
+.bank 0 slot 0
+.org 0
+.section "VBlank"
+;---------------
 VBlank:
 	RTI
+;---------------
+.ends
 
+
+.bank 0 slot 0
+.org 0
+.section "Main"
+;---------------
 Start:
 	Snes_Init
 	
+	;--LOADING THE PALETTE	
 	rep #%00010000	;16 bit xy
 	sep #%00100000	;8 bit ab
 
@@ -140,3 +148,15 @@ Start:
 	
 	lda #%10000001	;enable NMI and joypads
 	sta $4200
+
+forever:
+	wai
+	jmp forever
+;--------------------
+.ends
+
+.bank 1 slot 0
+.org 0
+.section "Tiledata"
+.include "tiles.inc"
+.ends
