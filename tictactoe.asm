@@ -146,7 +146,7 @@ VBlank:
 .section "Main"
 ;---------------
 Start:
-	Snes_Init
+	 Snes_Init
 	
 	;--LOADING THE PALETTE	
 	rep #%00010000	;16 bit xy
