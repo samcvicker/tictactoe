@@ -82,8 +82,8 @@ VBlank:
 	lda #$08
 	sta $0000,x	; put $08 to the good address
 	jmp +
-
-++	cmp #%01000000	;now check for Y
+++
+	cmp #%01000000	;now check for Y
 	bne +		;if not pressed, jump forward
 			;technically should not happen
 	
@@ -98,9 +98,9 @@ VBlank:
 	tax
 	lda #$0A
 	sta $0000,x
-
++
 	;now for cursor movement
-+	lda $0201	;get control input
+	lda $0201	;get control input
 	and #%00001111	;ONLY CHECKS FOR DPAD MOVEMENT
 	sta $0201	;store this in A
 	
@@ -110,32 +110,32 @@ VBlank:
 	cmp #$00	;if on the top,
 	beq +		;don't do anything
 	dec $0101	;subtract 1 from Y
-
-+	lda $0201	;get control again
++
+	lda $0201	;get control again
 	cmp #%00000100	;down?
 	bne +		;if not, skip
 	lda $0101
 	cmp #$02	;if on the bottom,
 	beq +		;don't do anything
 	inc $0101	; increase Y by 1
-
-+	lda $0201	;get control again
++
+	lda $0201	;get control again
 	cmp #%00000010	;left?
 	bne +
 	lda $0100
 	cmp #$00
 	beq +
 	dec $0100
-
-+	lda $0201
++
+	lda $0201
 	cmp #%00000001	;right?
 	bne +
 	lda $0100
 	cmp #$02
 	beq +
 	inc $0100
-
-+	rti
++
+	rti
 
 ;---------------
 .ends
@@ -146,7 +146,7 @@ VBlank:
 .section "Main"
 ;---------------
 Start:
-	 Snes_Init
+	Snes_Init
 	
 	;--LOADING THE PALETTE	
 	rep #%00010000	;16 bit xy
